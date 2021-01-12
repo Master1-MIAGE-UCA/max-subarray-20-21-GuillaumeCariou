@@ -171,7 +171,6 @@ struct tablo * sum_suffix(struct tablo source) {//==============================
   
   final = revereseArray(final);
 
-  printf("sum_suffix========================================================");
   printArray(final);
   return final;
 }
@@ -184,13 +183,15 @@ struct tablo * max_suffix(struct tablo source) {//==============================
   a->size =source.size*2;
   a->tab[0] = 0;
 
+  struct tablo * copy = revereseArray(&source);
+
   #pragma omp parallel for
-	for (int i = source.size-1; 0 <= i; i--)
+	for (int i = copy->size-1; 0 <= i; i--)
   {
-    a->tab[i+source.size] = source.tab[i];
+    a->tab[i+copy->size] = copy->tab[i];
   }
 
-  int m = log(source.size)/log(2);
+  int m = log(copy->size)/log(2);
 
   for (int i = m -1; 0 <= i; i--){
     int inf = pow(2,i);
@@ -198,7 +199,7 @@ struct tablo * max_suffix(struct tablo source) {//==============================
 
     #pragma omp parallel for
     for (int j = inf; j <= sup; j++){
-      a->tab[j] = a->tab[j*2] + a->tab[(j*2)+1];
+      a->tab[j] = fmax(a->tab[j*2], a->tab[(j*2)+1]);
     }
   }
 
@@ -221,7 +222,7 @@ struct tablo * max_suffix(struct tablo source) {//==============================
       if(j%2 == 0){//fils gauche
         b->tab[j] = b->tab[j/2];
       }else{//fils droit
-        b->tab[j] = b->tab[j/2] + a->tab[j-1];
+        b->tab[j] = fmax(b->tab[j/2], a->tab[j-1]);
       }
     }
   }
@@ -233,12 +234,13 @@ struct tablo * max_suffix(struct tablo source) {//==============================
 
   #pragma omp parallel for
   for (int i = 0; i < final->size; i++){
-    final->tab[i] = a->tab[i+final->size] + b->tab[i+final->size];
+    final->tab[i] = fmax(a->tab[i+final->size], b->tab[i+final->size]);
   }
   
   b->size = final->size;
   b->tab = final->tab;
-
+  
+  final = revereseArray(final);
 
   printArray(final);
   return final;
@@ -348,7 +350,5 @@ int main(int argc, char **argv) {
   struct tablo * SMAX = max_suffix(*PSUM);
   struct tablo * PMAX = max_prefix(*SSUM);
 
-  printArray(SMAX);
-  printArray(PMAX);
   //continuer étape 5
 }
