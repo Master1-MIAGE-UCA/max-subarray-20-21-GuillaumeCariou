@@ -9,10 +9,9 @@ struct tablo {
 };
 
 void printArray(struct tablo * tmp) {
-  printf("---- Array of size %i ---- \n", tmp->size);
   int size = tmp->size;
-  int i;
-  for (i = 0; i < size; ++i) {
+  printf("---- Array of size %i ---- \n", size);
+  for (int i = 0; i < size; ++i) {
     printf("%i ", tmp->tab[i]);
   }
   printf("\n");
@@ -34,17 +33,14 @@ void montee(struct tablo * source, struct tablo * destination) {
 
   int m = log(source->size)/log(2);
 
-  for (int i = m -1; 0 <= i; i--)
-  {
+  for (int i = m -1; 0 <= i; i--){
     int inf = pow(2,i);
     int sup = pow(2, i + 1) - 1;
 
     #pragma omp parallel for
-    for (int j = inf; j <= sup; j++)
-    {
+    for (int j = inf; j <= sup; j++){
       destination->tab[j] = destination->tab[j*2] + destination->tab[(j*2)+1];
     }
-    
   }
 }
 
@@ -52,14 +48,12 @@ void descente(struct tablo * a, struct tablo * b) {
   int m = log(a->size/2)/log(2);
   b->tab[1] = 0;
 
-  for (int i = 1; i <= m; i++)
-  {
+  for (int i = 1; i <= m; i++){
     int inf = pow(2,i);
     int sup = pow(2, i + 1) - 1;
 
     #pragma omp parallel for
-    for (int j = inf; j <= sup; j++)
-    {
+    for (int j = inf; j <= sup; j++){
       if(j%2 == 0){//fils gauche
         b->tab[j] = b->tab[j/2];
       }else{//fils droit
@@ -67,7 +61,6 @@ void descente(struct tablo * a, struct tablo * b) {
       }
     }
   }
-  
 }
 
 void final(struct tablo * a, struct tablo *b) {
@@ -76,35 +69,15 @@ void final(struct tablo * a, struct tablo *b) {
   final.tab = malloc(final.size*sizeof(int));
 
   #pragma omp parallel for
-  for (int i = 0; i < final.size; i++)
-  {
+  for (int i = 0; i < final.size; i++){
     final.tab[i] = a->tab[i+final.size] + b->tab[i+final.size];
   }
   
-
   b->size = final.size;
   b->tab = final.tab;
 }
 
-void generateArray(struct tablo * s) {
-  //construction d'un tableau pour tester
-  s->size=8;
-  s->tab=malloc(s->size*sizeof(int));
-  s->tab[0]=3;
-  s->tab[1]=1;
-  s->tab[2]=7;
-  s->tab[3]=0;
-  s->tab[4]=4;
-  s->tab[5]=1;
-  s->tab[6]=6;
-  s->tab[7]=3;
-
-}
-
-int main(int argc, char **argv) {
-  struct tablo source;
-
-  generateArray(&source);
+void sum_prefix(struct tablo source) {
   printArray(&source);
 
   struct tablo * a = malloc(sizeof(struct tablo));
@@ -123,4 +96,36 @@ int main(int argc, char **argv) {
 	
   final(a,b);
   printArray(b);
+}
+
+//https://cboard.cprogramming.com/c-programming/4073-string-integer-array.html
+struct tablo * foo (char *line) {
+  int num, i = 0, len;
+  int buff[100];
+  while ( sscanf( line, "%d%n", &num, &len) == 1 ) {
+    buff[i] = num;
+    line += len;    // step past the number we found
+    i++;            // increment our count of the number of values found
+  }
+  struct tablo * array = allocateTablo(i);
+  for (int j = 0; j < i; j++)
+  {
+    array->tab[j] = buff[j];
+  }
+  return array;
+}
+
+int main(int argc, char **argv) {
+  FILE *f;
+  if(argc == 2){
+    f = fopen(argv[1], "r");
+  }else{
+    return 1;
+  }
+  
+  int MAXCHAR = 1000;
+  char line[MAXCHAR];
+  fgets(line,MAXCHAR,f);
+  struct tablo * array = foo(line);
+  sum_prefix(*array);
 }
