@@ -24,6 +24,17 @@ struct tablo * allocateTablo(int size) {
   return tmp;
 }
 
+struct tablo * reverseArray(struct tablo * source){
+  struct tablo * copy = malloc(sizeof(struct tablo));
+  copy->tab = malloc(source->size*sizeof(int));
+  copy->size = source->size;
+  //#pragma omp parallel for
+  for (int i = 0; i < source->size; i++){
+    copy->tab[source->size-1-i] = source->tab[i];
+  }
+  return copy;
+}
+
 
 
 struct tablo * sum_prefix(struct tablo source) {//=========================================================================================OK
@@ -94,16 +105,6 @@ struct tablo * sum_prefix(struct tablo source) {//==============================
 }
 
 
-struct tablo * revereseArray(struct tablo * source){
-  struct tablo * copy = malloc(sizeof(struct tablo));
-  copy->tab = malloc(source->size*sizeof(int));
-  copy->size = source->size;
-  for (int i = 0; i < source->size; i++){
-    copy->tab[source->size-1-i] = source->tab[i];
-  }
-  return copy;
-}
-
 
 struct tablo * sum_suffix(struct tablo source) {//=========================================================================================OK
   //montee
@@ -112,7 +113,7 @@ struct tablo * sum_suffix(struct tablo source) {//==============================
   a->size =source.size*2;
   a->tab[0] = 0;
 
-  struct tablo * copy = revereseArray(&source);
+  struct tablo * copy = reverseArray(&source);
 
   #pragma omp parallel for
 	for (int i = copy->size-1; 0 <= i; i--)
@@ -169,7 +170,7 @@ struct tablo * sum_suffix(struct tablo source) {//==============================
   b->size = final->size;
   b->tab = final->tab;
   
-  final = revereseArray(final);
+  final = reverseArray(final);
 
   printArray(final);
   return final;
@@ -183,7 +184,7 @@ struct tablo * max_suffix(struct tablo source) {//==============================
   a->size =source.size*2;
   a->tab[0] = 0;
 
-  struct tablo * copy = revereseArray(&source);
+  struct tablo * copy = reverseArray(&source);
 
   #pragma omp parallel for
 	for (int i = copy->size-1; 0 <= i; i--)
@@ -240,7 +241,7 @@ struct tablo * max_suffix(struct tablo source) {//==============================
   b->size = final->size;
   b->tab = final->tab;
   
-  final = revereseArray(final);
+  final = reverseArray(final);
 
   printArray(final);
   return final;
