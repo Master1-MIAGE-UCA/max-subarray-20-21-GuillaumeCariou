@@ -94,20 +94,33 @@ struct tablo * sum_prefix(struct tablo source) {//==============================
 }
 
 
-struct tablo * sum_suffix(struct tablo source) {//=========================================================================================
+struct tablo * revereseArray(struct tablo * source){
+  struct tablo * copy = malloc(sizeof(struct tablo));
+  copy->tab = malloc(source->size*sizeof(int));
+  copy->size = source->size;
+  for (int i = 0; i < source->size; i++){
+    copy->tab[source->size-1-i] = source->tab[i];
+  }
+  return copy;
+}
+
+
+struct tablo * sum_suffix(struct tablo source) {//=========================================================================================OK
   //montee
   struct tablo * a = malloc(sizeof(struct tablo));
   a->tab = malloc(source.size*2*sizeof(int));
   a->size =source.size*2;
   a->tab[0] = 0;
 
+  struct tablo * copy = revereseArray(&source);
+
   #pragma omp parallel for
-	for (int i = source.size-1; 0 <= i; i--)
+	for (int i = copy->size-1; 0 <= i; i--)
   {
-    a->tab[i+source.size] = source.tab[i];
+    a->tab[i+copy->size] = copy->tab[i];
   }
 
-  int m = log(source.size)/log(2);
+  int m = log(copy->size)/log(2);
 
   for (int i = m -1; 0 <= i; i--){
     int inf = pow(2,i);
@@ -155,8 +168,10 @@ struct tablo * sum_suffix(struct tablo source) {//==============================
   
   b->size = final->size;
   b->tab = final->tab;
+  
+  final = revereseArray(final);
 
-
+  printf("sum_suffix========================================================");
   printArray(final);
   return final;
 }
