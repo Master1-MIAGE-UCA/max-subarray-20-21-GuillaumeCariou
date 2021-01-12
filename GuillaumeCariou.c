@@ -26,18 +26,12 @@ struct tablo * allocateTablo(int size) {
 }
 
 void montee(struct tablo * source, struct tablo * destination) {
-  //TODO : remplissage du tableau destination de taille 2*m en
-  // copiant les donn�es du tableau source dans destination, 
-  // � la bonne position
-  // on suppose que le malloc de destination a �t� fait avant
   #pragma omp parallel for
 	for (int i = source->size-1; 0 <= i; i--)
   {
     destination->tab[i+source->size] = source->tab[i];
   }
-  
-  // TODO: Boucle de calcul pour la mont�e dans l'arbre/tableau
-  
+
   int m = log(source->size)/log(2);
 
   for (int i = m -1; 0 <= i; i--)
@@ -55,7 +49,6 @@ void montee(struct tablo * source, struct tablo * destination) {
 }
 
 void descente(struct tablo * a, struct tablo * b) {
-  // TODO : implementation de la phase de descente
   int m = log(a->size/2)/log(2);
   b->tab[1] = 0;
 
@@ -78,7 +71,6 @@ void descente(struct tablo * a, struct tablo * b) {
 }
 
 void final(struct tablo * a, struct tablo *b) {
-  // TODO : phase finale
   struct tablo final;
   final.size = a->size/2;
   final.tab = malloc(final.size*sizeof(int));
@@ -91,7 +83,7 @@ void final(struct tablo * a, struct tablo *b) {
   
 
   b->size = final.size;
-  b->tab = final.tab;  
+  b->tab = final.tab;
 }
 
 void generateArray(struct tablo * s) {
