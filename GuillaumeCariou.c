@@ -198,7 +198,7 @@ struct tablo * max_suffix(struct tablo source) {//==============================
 
 
 //https://cboard.cprogramming.com/c-programming/4073-string-integer-array.html
-struct tablo * foo (char *line) {
+struct tablo * read_file (char *line) {
   int num, i = 0, len;
   int buff[128];//taile de nombre maximal
   while ( sscanf( line, "%d%n", &num, &len) == 1 ) {
@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
   int MAXCHAR = 1000;
   char line[MAXCHAR];
   fgets(line,MAXCHAR,f);
-  struct tablo * Q = foo(line);
+  struct tablo * Q = read_file(line);
 
   struct tablo * PSUM = sum_prefix(*Q);
   struct tablo * SSUM = sum_suffix(*Q);

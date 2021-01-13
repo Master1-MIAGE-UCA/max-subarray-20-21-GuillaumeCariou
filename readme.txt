@@ -1,17 +1,21 @@
-x---- Array of size 8 ----
-3 1 7 0 4 1 6 3
----- Array of size 16 ----
-0 25 11 14 4 7 5 9 3 1 7 0 4 1 6 3
----- Array of size 16 ----
-0 0 0 11 0 4 11 16 0 3 4 11 11 15 16 22
----- Array of size 8 ----
-3 4 11 11 15 16 22 25
+void printResult(...) : 		non parallel
+struct tablo * read_file (...) :	non parallel
+struct tablo * allocateTablo(...) : 	parallel
+struct tablo * reverseArray(...) :	parallel
 
-Sortie de prefix_sum
-PSUM OK
-SSUM
-SMAX
-PMAX
+
+struct tablo * sum_prefix(...) : 	parallel
+struct tablo * sum_suffix(...) : 	parallel
+struct tablo * max_prefix(...) : 	parallel
+struct tablo * max_suffix(...) : 	parallel
+etape 5 :				parallel
+etape 6 : 				non parallel
+
+
+
+
+
+
 
 gcc -g -Wall -std=c99 GuillaumeCariou.c -lm -fopenmp
 valgrind --leak-check=full ./a.out testme
