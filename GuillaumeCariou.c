@@ -17,6 +17,14 @@ void printArray(struct tablo * tmp) {
   printf("\n");
 }
 
+void printResult(struct tablo * tmp, int Max, int begin, int end) {
+  printf("%d ", Max);
+  for (int i = begin; i <= end; ++i) {
+    printf("%i ", tmp->tab[i]);
+  }
+  printf("\n");
+}
+
 struct tablo * allocateTablo(int size) {
   struct tablo * tmp = malloc(sizeof(struct tablo));
   tmp->size = size;
@@ -28,7 +36,7 @@ struct tablo * reverseArray(struct tablo * source){
   struct tablo * copy = malloc(sizeof(struct tablo));
   copy->tab = malloc(source->size*sizeof(int));
   copy->size = source->size;
-  //#pragma omp parallel for
+  #pragma omp parallel for
   for (int i = 0; i < source->size; i++){
     copy->tab[source->size-1-i] = source->tab[i];
   }
@@ -99,8 +107,6 @@ struct tablo * sum_prefix(struct tablo source) {//==============================
   b->size = final->size;
   b->tab = final->tab;
 
-  free(a);
-  free(b);
   return final;
 }
 
@@ -130,7 +136,7 @@ struct tablo * max_prefix(struct tablo source) {//==============================
 
   int m = log(source.size)/log(2);
 
-  for (int i = m -1; 0 <= i; i--){
+  for (int i = m - 1; 0 <= i; i--){
     int inf = pow(2,i);
     int sup = pow(2, i + 1) - 1;
 
@@ -177,8 +183,6 @@ struct tablo * max_prefix(struct tablo source) {//==============================
   b->size = final->size;
   b->tab = final->tab;
 
-  free(a);
-  free(b);
   return final;
 }
 
@@ -196,13 +200,14 @@ struct tablo * max_suffix(struct tablo source) {//==============================
 //https://cboard.cprogramming.com/c-programming/4073-string-integer-array.html
 struct tablo * foo (char *line) {
   int num, i = 0, len;
-  int buff[100];
+  int buff[128];//taile de nombre maximal
   while ( sscanf( line, "%d%n", &num, &len) == 1 ) {
     buff[i] = num;
     line += len;
     i++;
   }
   struct tablo * array = allocateTablo(i);
+  #pragma omp parallel for
   for (int j = 0; j < i; j++)
   {
     array->tab[j] = buff[j];
@@ -224,35 +229,35 @@ int main(int argc, char **argv) {
   struct tablo * Q = foo(line);
 
   struct tablo * PSUM = sum_prefix(*Q);
-  printf("===sum_prefix===");
-  printArray(PSUM);
   struct tablo * SSUM = sum_suffix(*Q);
-  printf("===sum_suffix===");
-  printArray(SSUM);
   struct tablo * SMAX = max_suffix(*PSUM);
-  printf("===max_suffix===");
-  printArray(SMAX);
   struct tablo * PMAX = max_prefix(*SSUM);
-  printf("===max_prefix===");
-  printArray(PMAX);
 
   //étape 5
   struct tablo * M = allocateTablo(Q->size);
   int Ms;
   int Mp;
+  #pragma omp parallel for
   for (int i = 0; i < Q->size; i++)
   {
     Ms = PMAX->tab[i] - SSUM->tab[i] + Q->tab[i];
     Mp = SMAX->tab[i] - PSUM->tab[i] + Q->tab[i];
     M->tab[i] = Ms + Mp - Q->tab[i];
   }
-  printf("===M===");
-  printArray(M);
 
-
-
-  free(PSUM);
-  free(SSUM);
-  free(SMAX);
-  free(PMAX);
+  //etape 6
+  int max = M->tab[0];
+  int begin = 0;
+  int end = 0;
+  for (int i = 1; i < M->size; i++)
+  {
+    if(M->tab[i] > max){
+      max = M->tab[i];
+      begin = i;
+    }else if(M->tab[i] == max){
+      end = i;
+    }
+  }
+  printResult(Q,max,begin,end);
+  return 0;
 }
