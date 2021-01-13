@@ -12,3 +12,6 @@ PSUM OK
 SSUM
 SMAX
 PMAX
+
+gcc -g -Wall -std=c99 GuillaumeCariou.c -lm -fopenmp
+valgrind --leak-check=full ./a.out testme

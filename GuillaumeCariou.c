@@ -99,6 +99,8 @@ struct tablo * sum_prefix(struct tablo source) {//==============================
   b->size = final->size;
   b->tab = final->tab;
 
+  free(a);
+  free(b);
   return final;
 }
 
@@ -140,7 +142,7 @@ struct tablo * max_prefix(struct tablo source) {//==============================
 
   //descente
   struct tablo * b = malloc(sizeof(struct tablo));
-  b->tab= malloc(source.size*2*sizeof(int));
+  b->tab = malloc(source.size*2*sizeof(int));
   b->size=source.size*2;
   b->tab[0] = 0;
 
@@ -175,6 +177,8 @@ struct tablo * max_prefix(struct tablo source) {//==============================
   b->size = final->size;
   b->tab = final->tab;
 
+  free(a);
+  free(b);
   return final;
 }
 
@@ -217,12 +221,12 @@ int main(int argc, char **argv) {
   int MAXCHAR = 1000;
   char line[MAXCHAR];
   fgets(line,MAXCHAR,f);
-  struct tablo * origine = foo(line);
+  struct tablo * Q = foo(line);
 
-  struct tablo * PSUM = sum_prefix(*origine);
+  struct tablo * PSUM = sum_prefix(*Q);
   printf("===sum_prefix===");
   printArray(PSUM);
-  struct tablo * SSUM = sum_suffix(*origine);
+  struct tablo * SSUM = sum_suffix(*Q);
   printf("===sum_suffix===");
   printArray(SSUM);
   struct tablo * SMAX = max_suffix(*PSUM);
@@ -232,5 +236,23 @@ int main(int argc, char **argv) {
   printf("===max_prefix===");
   printArray(PMAX);
 
-  //continuer étape 5
+  //étape 5
+  struct tablo * M = allocateTablo(Q->size);
+  int Ms;
+  int Mp;
+  for (int i = 0; i < Q->size; i++)
+  {
+    Ms = PMAX->tab[i] - SSUM->tab[i] + Q->tab[i];
+    Mp = SMAX->tab[i] - PSUM->tab[i] + Q->tab[i];
+    M->tab[i] = Ms + Mp - Q->tab[i];
+  }
+  printf("===M===");
+  printArray(M);
+
+
+
+  free(PSUM);
+  free(SSUM);
+  free(SMAX);
+  free(PMAX);
 }
