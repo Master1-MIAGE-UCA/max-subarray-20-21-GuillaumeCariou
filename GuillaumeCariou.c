@@ -235,13 +235,11 @@ int main(int argc, char **argv) {
 
   //étape 5
   struct tablo * M = allocateTablo(Q->size);
-  int Ms;
-  int Mp;
   #pragma omp parallel for
   for (int i = 0; i < Q->size; i++)
   {
-    Ms = PMAX->tab[i] - SSUM->tab[i] + Q->tab[i];
-    Mp = SMAX->tab[i] - PSUM->tab[i] + Q->tab[i];
+    int Ms = PMAX->tab[i] - SSUM->tab[i] + Q->tab[i];
+    int Mp = SMAX->tab[i] - PSUM->tab[i] + Q->tab[i];
     M->tab[i] = Ms + Mp - Q->tab[i];
   }
 
@@ -258,6 +256,7 @@ int main(int argc, char **argv) {
       end = i;
     }
   }
+
   printResult(Q,max,begin,end);
   return 0;
 }
